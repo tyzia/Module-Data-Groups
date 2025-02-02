@@ -15,8 +15,11 @@ jobs:
 
       - name: Fetch full history
         run: |
+          # Fetch full history for all branches involved in the PR
           git fetch --prune --unshallow
           git fetch origin +refs/pull/${{ github.event.pull_request.number }}/merge
+          git fetch origin ${{ github.event.before }}:${{ github.event.before }} # Fetch the 'before' commit explicitly
+          git fetch origin ${{ github.sha }}:${{ github.sha }} # Fetch the 'sha' commit explicitly
 
       - name: Determine modified folder
         id: folder
