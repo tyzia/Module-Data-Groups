@@ -14,7 +14,7 @@ jobs:
       - name: Checkout student PR code
         uses: actions/checkout@v2
 
-      # Step 2: Install dependencies in the student's repo (if necessary)
+      # Step 2: Install dependencies in the student's repo
       - name: Install dependencies in student's repo
         run: |
           cd Sprint-3/quote-generator
@@ -25,9 +25,18 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: tyzia/moduleDataGroups_sprint3_quoteGenerator_testRunner
-          token: ${{ secrets.RUN_CYPRESS_MODULE_DATA_GROUPS }}
+          token: ${{ secrets.RUN_CYPRESS_MODULE_DATA_GROUPS }}  # Ensure token is passed
           ref: main
           path: quote-generator-test-runner
+          ssh-strict: true
+          persist-credentials: true
+          clean: true
+          sparse-checkout-cone-mode: true
+          fetch-depth: 1
+          fetch-tags: false
+          lfs: false
+          submodules: false
+          set-safe-directory: true
 
       # Step 4: Install Cypress in test runner repo
       - name: Install Cypress in test runner repo
