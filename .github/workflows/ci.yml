@@ -13,6 +13,9 @@ jobs:
       - name: Checkout student PR code
         uses: actions/checkout@v2
 
+      - name: Fetch full history
+        run: git fetch --prune --unshallow
+
       - name: Determine modified folder
         id: folder
         run: |
