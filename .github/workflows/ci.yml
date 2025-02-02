@@ -19,6 +19,21 @@ jobs:
         run: |
           cd Sprint-3/quote-generator
           npm install
+          
+
+      - name: Check environment and secrets
+        run: |
+          echo "Printing all environment variables"
+          printenv  # This will print all the environment variables to debug
+          
+          echo "Checking for the RUN_CYPRESS_MODULE_DATA_GROUPS secret"
+          if [ -z "${{ secrets.RUN_CYPRESS_MODULE_DATA_GROUPS }}" ]; then
+            echo "RUN_CYPRESS_MODULE_DATA_GROUPS secret is not available"
+            exit 1
+          else
+            echo "RUN_CYPRESS_MODULE_DATA_GROUPS secret is available"
+          fi
+
 
       # Step 3: Checkout Cypress test runner repo
       - name: Checkout Cypress test runner repo
