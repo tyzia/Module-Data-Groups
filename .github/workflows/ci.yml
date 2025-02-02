@@ -21,18 +21,7 @@ jobs:
           npm install
           
 
-      - name: Check environment and secrets
-        run: |
-          echo "Printing all environment variables"
-          printenv  # This will print all the environment variables to debug
-          
-          echo "Checking for the TEST_RUNNER secret"
-          if [ -z "${{ secrets.TEST_RUNNER }}" ]; then
-            echo "TEST_RUNNER secret is not available"
-            exit 1
-          else
-            echo "TEST_RUNNER secret is available"
-          fi
+  
 
 
       # Step 3: Checkout Cypress test runner repo
@@ -40,7 +29,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: tyzia/moduleDataGroups_sprint3_quoteGenerator_testRunner
-          token: ${{ secrets.TEST_RUNNER }}  # Ensure token is passed
+          token: ${{ secrets.CYPRESS }}  # Ensure token is passed
           ref: main
           path: quote-generator-test-runner
           ssh-strict: true
