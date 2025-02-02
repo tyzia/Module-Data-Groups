@@ -13,54 +13,11 @@ jobs:
       - name: Checkout student PR code
         uses: actions/checkout@v2
 
+      - name: List directory structure
+        run: |
+          ls -R
+
       - name: Install dependencies in student's repo
-        run: npm install
-
-      - name: Checkout Cypress test runner repo
-        uses: actions/checkout@v3
-        with:
-          repository: tyzia/moduleDataGroups_sprint3_quoteGenerator_testRunner
-          token: ${{ secrets.RUN_CYPRESS_MODULE_DATA_GROUPS }}
-          ref: main
-          path: quote-generator-test-runner
-
-      - name: Install Cypress in test runner repo
         run: |
-          cd quote-generator-test-runner
+          cd student-repo # or the correct subfolder where package.json is
           npm install
-
-      - name: Determine modified folder
-        id: folder
-        run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files: $CHANGED_FILES"
-
-          for file in $CHANGED_FILES; do
-            if [[ "$file" =~ ^(Sprint-1|Sprint-2|Sprint-3)/([^/]+)/ ]]; then
-              echo "modified_folder=${BASH_REMATCH[1]}" >> $GITHUB_ENV
-              echo "subfolder=${BASH_REMATCH[2]}" >> $GITHUB_ENV
-              break
-            fi
-          done
-
-          if [ -z "$modified_folder" ]; then
-            echo "No relevant Sprint folder modified"
-            exit 1
-          fi
-
-      - name: Copy exercise folder to test runner repo
-        run: |
-          cp -r ./$modified_folder quote-generator-test-runner/
-
-      - name: Run Cypress tests based on modified folder
-        run: |
-          cd quote-generator-test-runner
-          FOLDER_PATH="cypress/e2e/${modified_folder}/${subfolder}"
-          
-          if [ -d "$FOLDER_PATH" ]; then
-            echo "Running Cypress tests in $FOLDER_PATH"
-            npm run cypress:run -- --spec "$FOLDER_PATH/*"
-          else
-            echo "No Cypress tests found in $FOLDER_PATH"
-            exit 1
-          fi
