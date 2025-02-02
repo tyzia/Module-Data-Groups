@@ -12,17 +12,12 @@ jobs:
     steps:
       # Step 1: Checkout the student's PR code (automatically uses the PR branch)
       - name: Checkout student PR code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Step 2: Install dependencies in the student's repo
       - name: Install dependencies in student's repo
-        run: |
-          cd Sprint-3/quote-generator
-          npm install
-          
-
-  
-
+        run: npm install
+        working-directory: ./Sprint-3/quote-generator
 
       # Step 3: Checkout Cypress test runner repo
       - name: Checkout Cypress test runner repo
@@ -32,29 +27,17 @@ jobs:
           token: ${{ secrets.CYPRESS }}  # Ensure token is passed
           ref: main
           path: quote-generator-test-runner
-          ssh-strict: true
-          persist-credentials: true
-          clean: true
-          sparse-checkout-cone-mode: true
-          fetch-depth: 1
-          fetch-tags: false
-          lfs: false
-          submodules: false
-          set-safe-directory: true
 
       # Step 4: Install Cypress in test runner repo
       - name: Install Cypress in test runner repo
-        run: |
-          cd quote-generator-test-runner
-          npm install
+        run: npm install
+        working-directory: ./quote-generator-test-runner
 
       # Step 5: Copy exercise folder to test runner repo
       - name: Copy exercise folder to test runner repo
-        run: |
-          cp -r Sprint-3/quote-generator quote-generator-test-runner/
+        run: cp -r Sprint-3/quote-generator quote-generator-test-runner/
 
       # Step 6: Run Cypress tests inside the Sprint-3/quote-generator folder
       - name: Run Cypress tests in quote-generator
-        run: |
-          cd quote-generator-test-runner
-          npm run cypress:run -- --spec "cypress/e2e/quote-generator/*"
+        run: npm run cypress:run -- --spec "cypress/e2e/quote-generator/*"
+        working-directory: ./quote-generator-test-runner
