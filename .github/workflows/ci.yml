@@ -16,9 +16,11 @@ jobs:
       - name: Determine modified folder
         id: folder
         run: |
+          # Fetch the changed files between the previous commit (before) and the current commit (sha)
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           echo "Changed files: $CHANGED_FILES"
 
+          # Check which Sprint folder was modified
           for file in $CHANGED_FILES; do
             if [[ "$file" =~ ^(Sprint-1|Sprint-2|Sprint-3)/([^/]+)/ ]]; then
               echo "modified_folder=${BASH_REMATCH[1]}" >> $GITHUB_ENV
@@ -27,10 +29,12 @@ jobs:
             fi
           done
 
+          # If no relevant folder was modified, exit with an error
           if [ -z "$modified_folder" ]; then
             echo "No relevant Sprint folder modified"
             exit 1
           fi
+      
 
       - name: Install dependencies in student's repo
         run: |
