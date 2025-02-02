@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       # Step 1: Checkout the student's PR code (automatically uses the PR branch)
       - name: Checkout student PR code
         uses: actions/checkout@v3
@@ -24,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: tyzia/moduleDataGroups_sprint3_quoteGenerator_testRunner
-          token: ${{ secrets.CYPRESS }}  # Ensure token is passed
+          token: ${{ secrets.GITHUB_TOKEN }}  # Ensure token is passed
           ref: main
           path: quote-generator-test-runner
 
