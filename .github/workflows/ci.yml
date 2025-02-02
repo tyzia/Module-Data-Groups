@@ -27,7 +27,7 @@ jobs:
           printenv  # This will print all the environment variables to debug
           
           echo "Checking for the RUN_CYPRESS_MODULE_DATA_GROUPS secret"
-          if [ -z "${{ secrets.RUN_CYPRESS_MODULE_DATA_GROUPS }}" ]; then
+          if [ -z "${{ secrets.CYPRESS }}" ]; then
             echo "RUN_CYPRESS_MODULE_DATA_GROUPS secret is not available"
             exit 1
           else
