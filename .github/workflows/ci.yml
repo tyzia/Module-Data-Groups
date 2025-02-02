@@ -13,8 +13,36 @@ jobs:
       - name: Checkout student PR code
         uses: actions/checkout@v2
 
+      - name: Fetch full history
+        run: git fetch --prune --unshallow
+
+      - name: Determine modified folder
+        id: folder
+        run: |
+          # Fetch the changed files between the previous commit (before) and the current commit (sha)
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Changed files: $CHANGED_FILES"
+
+          # Check which Sprint folder was modified
+          for file in $CHANGED_FILES; do
+            if [[ "$file" =~ ^(Sprint-1|Sprint-2|Sprint-3)/([^/]+)/ ]]; then
+              echo "modified_folder=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+              echo "subfolder=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+              break
+            fi
+          done
+
+          # If no relevant folder was modified, exit with an error
+          if [ -z "$modified_folder" ]; then
+            echo "No relevant Sprint folder modified"
+            exit 1
+          fi
+
+
       - name: Install dependencies in student's repo
-        run: npm install
+        run: |
+          cd $modified_folder/$subfolder
+          npm install
 
       - name: Checkout Cypress test runner repo
         uses: actions/checkout@v3
@@ -29,28 +57,9 @@ jobs:
           cd quote-generator-test-runner
           npm install
 
-      - name: Determine modified folder
-        id: folder
-        run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files: $CHANGED_FILES"
-
-          for file in $CHANGED_FILES; do
-            if [[ "$file" =~ ^(Sprint-1|Sprint-2|Sprint-3)/([^/]+)/ ]]; then
-              echo "modified_folder=${BASH_REMATCH[1]}" >> $GITHUB_ENV
-              echo "subfolder=${BASH_REMATCH[2]}" >> $GITHUB_ENV
-              break
-            fi
-          done
-
-          if [ -z "$modified_folder" ]; then
-            echo "No relevant Sprint folder modified"
-            exit 1
-          fi
-
       - name: Copy exercise folder to test runner repo
         run: |
-          cp -r ./$modified_folder quote-generator-test-runner/
+          cp -r ./$modified_folder/$subfolder quote-generator-test-runner/
 
       - name: Run Cypress tests based on modified folder
         run: |
