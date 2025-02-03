@@ -8,14 +8,36 @@ on:
 jobs:
   cypress-tests:
     runs-on: ubuntu-latest
-    environment: test-environment  # Add this line to use the environment
 
     steps:
-      # Debug step to check if the ONE secret is accessible
-      - name: Debug ONE secret
-        run: |
-          if [ -z "${{ secrets.CYPRESS }}" ]; then
-            echo "ONE secret is empty or not found"
-          else
-            echo "ONE secret is set to: ${{ secrets.CYPRESS }}"
-          fi
+      # Step 1: Checkout the student's PR code (automatically uses the PR branch)
+      - name: Checkout student PR code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies in the student's repo
+      - name: Install dependencies in student's repo
+        run: npm install
+        working-directory: ./Sprint-3/quote-generator
+
+      # Step 3: Checkout Cypress test runner repo
+      - name: Checkout Cypress test runner repo
+        uses: actions/checkout@v3
+        with:
+          repository: tyzia/moduleDataGroups_sprint3_quoteGenerator_testRunner
+          token: ${{ secrets.CYPRESS }}  # Ensure token is passed
+          ref: main
+          path: quote-generator-test-runner
+
+      # Step 4: Install Cypress in test runner repo
+      - name: Install Cypress in test runner repo
+        run: npm install
+        working-directory: ./quote-generator-test-runner
+
+      # Step 5: Copy exercise folder to test runner repo
+      - name: Copy exercise folder to test runner repo
+        run: cp -r Sprint-3/quote-generator quote-generator-test-runner/
+
+      # Step 6: Run Cypress tests inside the Sprint-3/quote-generator folder
+      - name: Run Cypress tests in quote-generator
+        run: npm run cypress:run -- --spec "cypress/e2e/Sprint-3/quote-generator/*"
+        working-directory: ./quote-generator-test-runner
