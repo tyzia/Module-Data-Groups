@@ -37,6 +37,12 @@ jobs:
       - name: Copy exercise folder to test runner repo
         run: cp -r Sprint-3/quote-generator quote-generator-test-runner/
 
+      # Step 6: Debugging - List files after copying
+      - name: Debug - List files in quote-generator-test-runner
+        run: |
+            echo "Contents of quote-generator-test-runner:"
+            ls -R quote-generator-test-runner
+
       # Step 6: Run Cypress tests inside the Sprint-3/quote-generator folder
       - name: Run Cypress tests in quote-generator
         run: npm run test -- --spec "cypress/e2e/Sprint-3/quote-generator/*"
