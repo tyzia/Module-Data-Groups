@@ -35,7 +35,7 @@ jobs:
 
       # Step 5: Copy exercise folder to test runner repo
       - name: Copy exercise folder to test runner repo
-        run: cp -r Sprint-3/quote-generator quote-generator-test-runner/
+        run: cp -r Sprint-3 quote-generator-test-runner/
 
       # Step 6: Debugging - List files after copying
       - name: Debug - List files in quote-generator-test-runner
